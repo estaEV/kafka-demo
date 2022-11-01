@@ -1,0 +1,5 @@
+https://stackoverflow.com/questions/48114040/exception-during-topic-deletion-when-kafka-is-hosted-in-docker-in-windows
+
+Additional brokers dosent start because the topic dosent get deleted:
+ERROR Error while renaming dir for replicated_topic-0 in log dir D:\tmp\kafka-logs-3 (kafka.server.LogDirFailureChannel)
+

@@ -1,0 +1,53 @@
+cd D:\kafka_2.13-3.2.1\bin\windows
+
+Bring it up:
+docker compose -f .\kafka-compose-3.yml up -d
+
+Create a topic
+docker exec broker \
+kafka-topics --bootstrap-server broker:9092 --create --topic quickstart
+kafka-topics --bootstrap-server broker:9092 --create --topic replicated_topic --replication-factor 3 --partitions 1
+
+Write a message to the broker
+docker exec --interactive --tty broker \
+kafka-console-producer --bootstrap-server broker:9092 --topic quickstart
+here comes some text
+Ctrl+D
+
+Read the messages
+docker exec --interactive --tty broker \
+kafka-console-consumer --bootstrap-server broker:9092 --topic quickstart --from-beginning
+Ctrl+C
+
+Shut it down
+docker-compose -f kafka-compose-3.yml down
+
+cd /var/lib/kafka
+cd ..
+
+-----------------------------------------------------
+.\zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+3x
+.\kafka-server-start.bat ..\..\config\server-1.properties
+
+Topics:
+.\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic replicated_topic --replication-factor 3 --partitions 1
+.\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic demotop2 --replication-factor 1 --partitions 1
+
+.\kafka-topics.bat --bootstrap-server localhost:9092 --create --topic test-topic-replicated --replication-factor 3 --partitions 3
+
+.\kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic replicated_topic
+
+.\kafka-topics.bat --bootstrap-server localhost:9092 --list
+
+.\kafka-topics.bat --bootstrap-server localhost:9092 --describe --topic newtop
+
+---------------------------------------------------
+Prod/Cons
+.\kafka-console-producer.bat --broker-list localhost:9092 --topic replicated_topic
+.\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic demotop2 --from-beginning
+
+Advanced:
+\\ Send 50 rand records to a topic
+.\kafka-producer-perf-test.bat --topic my-topic-2 --num-records 50 --record-size 1 --throughput 10 --producer-props bootstrap.servers=localhost:9092 key.serializer=org.apache.kafka.common.serialization.StringSerializer value.serializer=org.apache.kafka.common.serialization.StringSerializer
